@@ -6,11 +6,10 @@ int main()
 
     SQLiteDatabase db{"test.db"};
 
-    db.execute("CREATE TABLE IF NOT EXISTS test_table (id INTEGER PRIMARY KEY, value TEXT)").step();
+    db.execute("CREATE TABLE IF NOT EXISTS test_table (id INTEGER PRIMARY KEY, value TEXT)");
     
-    db.execute("INSERT INTO test_table (value) VALUES(?)", "Hello Word!").step();
+    db.execute("INSERT INTO test_table (value) VALUES(?)", "Hello Word!");
 
-    // Don't need to step() on executemany()
     db.executemany<const char*>("INSERT INTO test_table (value) VALUES(?)", 
         {
             {"Hello Word!"}, 
@@ -20,7 +19,6 @@ int main()
 
     auto stmt = db.execute("SELECT * FROM test_table");
 
-    // Don't need to step() on fetchall()
     for( auto [id, value]: stmt.fetchall<int, std::string_view>() ){
         std::cout << id << ' ' << value << "\n";
     }

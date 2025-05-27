@@ -16,6 +16,7 @@ class SQLiteStatement
 
     SQLiteDatabase &db;
     sqlite3_stmt *stmt_pointer = nullptr;
+    int step_rc;
 
     friend class SQLiteDatabase;
 
@@ -146,8 +147,7 @@ public:
 
         auto begin()
         {
-            int step_rc = stmt.step();
-            return stmt_iterator(stmt, step_rc);
+            return stmt_iterator(stmt, stmt.step_rc);
         }
 
         auto end()
@@ -180,6 +180,7 @@ public:
         {
             stmt.bind(1, std::forward<decltype(args)>(args)...);
         }
+        stmt.step();
         return stmt;
     }
 
@@ -210,7 +211,8 @@ inline int SQLiteStatement::finalize()
 
 inline int SQLiteStatement::step()
 {
-    return sqlite3_step(stmt_pointer);
+    step_rc = sqlite3_step(stmt_pointer);
+    return step_rc;
 }
 
 inline int SQLiteStatement::reset()
