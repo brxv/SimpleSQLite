@@ -25,17 +25,14 @@ int main()
         std::cout << id << ' ' << value << "\n";
     }
 
-    for( auto [id, value]: stmt.fetchall<int, std::string_view>() ){
+    // example without fetchall()
+    int rc;
+    while ((rc = stmt.step()) == SQLITE_ROW)
+    {
+        auto [id, value] = stmt.column<int, std::string_view>();
         std::cout << id << ' ' << value << "\n";
     }
 
-    return 0;
 
-    // int rc;
-    // while ((rc = stmt.step()) == SQLITE_ROW)
-    // {
-    //     auto [id, value] = stmt.column<int, std::string_view>();
-    //     std::cout << id << ' ' << value << "\n";
-    // }
-    // return 0;
+    return 0;
 }

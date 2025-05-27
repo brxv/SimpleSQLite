@@ -24,13 +24,10 @@ int main()
 
     auto stmt = db.execute("SELECT * FROM test_table");
 
-    int rc;
-    while ((rc = stmt.step()) == SQLITE_ROW)
-    {
-        auto [id, value] = stmt.column<int, std::string_view>();
+    // Don't need to step() on fetchall()
+    for( auto [id, value]: stmt.fetchall<int, std::string_view>() ){
         std::cout << id << ' ' << value << "\n";
     }
-    
 
     return 0;
 }
