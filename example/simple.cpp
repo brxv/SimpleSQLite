@@ -10,6 +10,7 @@ int main()
     
     db.execute("INSERT INTO test_table (value) VALUES(?)", "Hello Word!").step();
 
+    // Don't need to step() on executemany()
     db.executemany<const char*>("INSERT INTO test_table (value) VALUES(?)", 
         {
             {"Hello Word!"}, 
@@ -17,15 +18,24 @@ int main()
         }
     );
 
-    // Don't need stmt.step() on executemany()
-
     auto stmt = db.execute("SELECT * FROM test_table");
 
-    int rc;
-    while ((rc = stmt.step()) == SQLITE_ROW)
-    {
-        auto [id, value] = stmt.column<int, std::string_view>();
+    // Don't need to step() on fetchall()
+    for( auto [id, value]: stmt.fetchall<int, std::string_view>() ){
         std::cout << id << ' ' << value << "\n";
     }
+
+    for( auto [id, value]: stmt.fetchall<int, std::string_view>() ){
+        std::cout << id << ' ' << value << "\n";
+    }
+
     return 0;
+
+    // int rc;
+    // while ((rc = stmt.step()) == SQLITE_ROW)
+    // {
+    //     auto [id, value] = stmt.column<int, std::string_view>();
+    //     std::cout << id << ' ' << value << "\n";
+    // }
+    // return 0;
 }
